@@ -1,2 +1,6 @@
 /target
 fokkens.ged
+
+# IntelliJ stuff
+.idea
+*.iml
