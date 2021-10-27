@@ -21,7 +21,7 @@ public abstract class Structure {
             READER.mark(1);
             char level = (char) READER.read();
             READER.reset();
-            return level > CURRENT_LEVEL;
+            return level <= CURRENT_LEVEL;
         } catch (IOException e) {
             e.getMessage();
         }

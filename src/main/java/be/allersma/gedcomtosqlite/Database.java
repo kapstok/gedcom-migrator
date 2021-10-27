@@ -17,12 +17,12 @@ public class Database {
         StringBuilder creationStatement = new StringBuilder();
 
         creationStatement.append("CREATE TABLE individuals (");
-        creationStatement.append("ID INTEGER PRIMARY KEY AUTOINCREMENT,");
-        creationStatement.append("GIVEN TEXT,");
-        creationStatement.append("LASTNAME TEXT,");
-        creationStatement.append("NICKNAME TEXT,");
-        creationStatement.append("NOTE TEXT,");
-        creationStatement.append("SEX TEXT");
+        creationStatement.append("id INTEGER PRIMARY KEY AUTOINCREMENT,");
+        creationStatement.append("given TEXT,");
+        creationStatement.append("lastname TEXT,");
+        creationStatement.append("nickname TEXT,");
+        creationStatement.append("note TEXT,");
+        creationStatement.append("sex TEXT NOT NULL");
         creationStatement.append(");");
 
         execute(creationStatement.toString());
@@ -35,7 +35,8 @@ public class Database {
             statement.executeUpdate(query);
             statement.close();
         } catch (SQLException e) {
-            System.err.println(String.format("Something went wrong with the statement. Details:\n%s", e.getMessage()));
+            System.err.println("Something went wrong with the statement. Details:\n" + e.getMessage());
+            System.err.println("On statement: " + query);
         } finally {
             close();
         }
@@ -46,7 +47,7 @@ public class Database {
             Class.forName("org.sqlite.JDBC");
             connection = DriverManager.getConnection("jdbc:sqlite:" + path);
         } catch (Exception e) {
-            System.err.println(String.format("Could not connect to database. Details:\n%s", e.getMessage()));
+            System.err.println("Could not connect to database. Details:\n" + e.getMessage());
             System.exit(1);
         }
 
@@ -57,7 +58,7 @@ public class Database {
         try {
             connection.close();
         } catch (SQLException e) {
-            System.err.println(String.format("Could not close connection. Details:\n%s", e.getMessage()));
+            System.err.println("Could not close connection. Details:\n" + e.getMessage());
             System.exit(1);
         }
 
