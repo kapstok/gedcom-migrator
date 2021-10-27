@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 public class INDIStructure extends Structure {
     private final String KEY;
     private String sex;
+    private String note = null;
 
     public INDIStructure(BufferedReader reader, String key) {
         super(reader, '0');
@@ -26,7 +27,7 @@ public class INDIStructure extends Structure {
                 "NULL",
                 "NULL",
                 "NULL",
-                "NULL",
+                note == null ? "NULL" : "'" + note + "'",
                 "'" + sex + "'");
 
         result.append("INSERT INTO individuals (given, lastname, nickname, note, sex) ");
@@ -38,25 +39,32 @@ public class INDIStructure extends Structure {
     private void parse() throws IOException {
         String line;
 
-        while ((line = READER.readLine()) != null && !isNewStructure()) {
+        while (!isNewStructure() && (line = READER.readLine()) != null) {
             // groups.get(1) = indent. In which level is the line defined?
             // groups.get(2) = record type. Tells about what kind of data it's about.
             // groups.get(3) = value.
             Pattern pattern = Pattern.compile("([0-9]+) (\\S*) *(.*)");
             Matcher matcher = pattern.matcher(line);
+            LineCounter.increment();
 
-            if (!isNewStructure()) {
-                if (matcher.find()) {
-                    // Check record type
-                    switch (matcher.group(2)) {
-                        case "SEX":
-                            System.out.println("Found SEX item: '" + line + "'");
-                            sex = matcher.group(3);
-                            break;
-                        default:
-                            System.out.println("Unkown item: '" + line + "'");
-                            break;
-                    }
+            if (matcher.find()) {
+                // Check record type
+                switch (matcher.group(2)) {
+                    case "SEX":
+                        System.out.println("Found SEX item: '" + line + "'");
+                        sex = matcher.group(3);
+                        break;
+                    case "NOTE":
+                        System.out.println("Found NOTE item: '" + line + "'");
+                        NoteStructure noteStructure = new NoteStructure(READER, '1', matcher.group(3));
+                        noteStructure.parse();
+                        note = noteStructure.getResult();
+                        break;
+                    default:
+                        System.out.println(String.format(
+                                "Unknown item: '%s' (%s)", line, LineCounter.getLineNumber())
+                        );
+                        break;
                 }
             }
         }

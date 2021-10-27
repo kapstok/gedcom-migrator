@@ -22,6 +22,7 @@ public class GedcomParser {
             // groups.get(3) = value.
             Pattern pattern = Pattern.compile("([0-9]+) (\\S*) *(.*)");
             Matcher matcher = pattern.matcher(line);
+            LineCounter.increment();
 
             if (matcher.find()) {
                 // Check whether it's a root item
@@ -38,12 +39,14 @@ public class GedcomParser {
                             System.out.println("Found root item: '" + line + "'");
                             break;
                         default:
-                            System.out.println("Unkown root item: '" + line + "'");
+                            System.out.println(String.format(
+                                    "Unknown root item: '%s' (%s)", line, LineCounter.getLineNumber())
+                            );
                             break;
                     }
                 }
             } else {
-                System.out.println("Unparsable line: " + line);
+                System.err.println(String.format("Unparsable line: '%s' (%s)", line, LineCounter.getLineNumber()));
             }
         }
 
