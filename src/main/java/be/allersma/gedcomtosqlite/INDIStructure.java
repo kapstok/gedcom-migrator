@@ -6,9 +6,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class INDIStructure extends Structure {
-    private final String KEY;
+    private final String KEY; // Is ignored, as AUTO_INCREMENT is used. This may be changed later.
     private String sex;
     private String note = null;
+    private String givenNames = null;
+    private String surnames = null;
+    private String nicknames = null;
 
     public INDIStructure(BufferedReader reader, String key) {
         super(reader, '0');
@@ -24,10 +27,10 @@ public class INDIStructure extends Structure {
     public String databaseQuery() {
         StringBuilder result = new StringBuilder();
         String values = String.format("VALUES (%s, %s, %s, %s, %s);",
-                "NULL",
-                "NULL",
-                "NULL",
-                note == null ? "NULL" : "'" + note + "'",
+                givenNames == null ? "NULL" : givenNames,
+                surnames == null ? "NULL" : surnames,
+                nicknames == null ? "NULL" : nicknames,
+                note == null ? "NULL" : note,
                 "'" + sex + "'");
 
         result.append("INSERT INTO individuals (given, lastname, nickname, note, sex) ");
@@ -51,19 +54,26 @@ public class INDIStructure extends Structure {
                 // Check record type
                 switch (matcher.group(2)) {
                     case "SEX":
-                        System.out.println("Found SEX item: '" + line + "'");
+                        //System.out.println("Found SEX item: '" + line + "'");
                         sex = matcher.group(3);
                         break;
                     case "NOTE":
-                        System.out.println("Found NOTE item: '" + line + "'");
-                        NoteStructure noteStructure = new NoteStructure(READER, '1', matcher.group(3));
+                        //System.out.println("Found NOTE item: '" + line + "'");
+                        NOTEStructure noteStructure = new NOTEStructure(READER, '1', matcher.group(3));
                         noteStructure.parse();
                         note = noteStructure.getResult();
                         break;
+                    case "NAME":
+                        System.out.println("Found NAME item: '" + line + "'");
+                        NAMEStructure nameStructure = new NAMEStructure(READER, '1', matcher.group(3));
+                        nameStructure.parsePersonalNamePiecesStructure();
+                        givenNames = nameStructure.getGivenNames();
+                        surnames = nameStructure.getSurnames();
+                        nicknames = nameStructure.getNicknames();
+                        break;
                     default:
-                        System.out.println(String.format(
-                                "Unknown item: '%s' (%s)", line, LineCounter.getLineNumber())
-                        );
+                        System.out.printf(
+                                "Unknown item: '%s' (%s)%n", line, LineCounter.getLineNumber());
                         break;
                 }
             }

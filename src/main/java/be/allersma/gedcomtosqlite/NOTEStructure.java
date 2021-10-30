@@ -5,11 +5,11 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class NoteStructure extends Structure {
+public class NOTEStructure extends Structure {
     private final String STARTING_NOTE;
     private String result = null;
 
-    public NoteStructure(BufferedReader reader, char currentLevel, String startingNote) {
+    public NOTEStructure(BufferedReader reader, char currentLevel, String startingNote) {
         super(reader, currentLevel);
         STARTING_NOTE = startingNote;
     }
@@ -20,7 +20,7 @@ public class NoteStructure extends Structure {
 
         while (!isNewStructure() && (line = READER.readLine()) != null) {
             LineCounter.increment();
-            line = line.replace("'", "''"); // Escape single quote in sqlite3. Somehow it ain't workin'
+            line = line.replace("'", "''");
 
             // groups.get(1) = indent. In which level is the line defined?
             // groups.get(2) = record type. Tells about what kind of data it's about.
@@ -50,6 +50,6 @@ public class NoteStructure extends Structure {
     }
 
     public String getResult() {
-        return result;
+        return "'" + result + "'";
     }
 }
