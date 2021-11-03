@@ -17,18 +17,30 @@ public class Database {
     }
 
     public void createNewDatabase() {
-        StringBuilder creationStatement = new StringBuilder();
+        StringBuilder individualsStatement = new StringBuilder();
+        individualsStatement.append("CREATE TABLE individuals (");
+        individualsStatement.append("id INTEGER PRIMARY KEY,");
+        individualsStatement.append("given TEXT,");
+        individualsStatement.append("lastname TEXT,");
+        individualsStatement.append("nickname TEXT,");
+        individualsStatement.append("note TEXT,");
+        individualsStatement.append("sex TEXT NOT NULL");
+        individualsStatement.append(");");
 
-        creationStatement.append("CREATE TABLE individuals (");
-        creationStatement.append("id INTEGER PRIMARY KEY AUTOINCREMENT,");
-        creationStatement.append("given TEXT,");
-        creationStatement.append("lastname TEXT,");
-        creationStatement.append("nickname TEXT,");
-        creationStatement.append("note TEXT,");
-        creationStatement.append("sex TEXT NOT NULL");
-        creationStatement.append(");");
+        StringBuilder eventsStatement = new StringBuilder();
+        eventsStatement.append("CREATE TABLE events (");
+        eventsStatement.append("id INTEGER PRIMARY KEY AUTOINCREMENT,");
+        eventsStatement.append("individual INTEGER NOT NULL,");
+        eventsStatement.append("type TEXT NOT NULL,");
+        eventsStatement.append("startDate TEXT,");
+        eventsStatement.append("endDate TEXT,");
+        eventsStatement.append("place TEXT,");
+        eventsStatement.append("note TEXT,");
+        eventsStatement.append("FOREIGN KEY(individual) REFERENCES individuals(id)");
+        eventsStatement.append(");");
 
-        execute(creationStatement.toString());
+        execute(individualsStatement.toString());
+        execute(eventsStatement.toString());
     }
 
     public void execute(String query) {

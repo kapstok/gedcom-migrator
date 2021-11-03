@@ -46,10 +46,9 @@ public class NAMEStructure extends Structure {
         return this.nicknames;
     }
 
-    // TODO: Implement NOTE record once it is added to Database.
+    // TODO: Implement NOTE record once a 'names' tables is added to Database.
     public void parsePersonalNamePiecesStructure() throws IOException {
         String line;
-        StringBuilder builder = new StringBuilder();
 
         while (!isNewStructure() && (line = READER.readLine()) != null) {
             LineCounter.increment();
