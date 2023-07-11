@@ -14,6 +14,13 @@
         <maven.compiler.target>11</maven.compiler.target>
     </properties>
 
+    <scm>
+        <url>https://github.com/kapstok/gedcom-to-sqlite/src</url>
+        <connection>scm:git:ssh://git@github.com/kapstok/gedcom-to-sqlite.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/kapstok/gedcom-to-sqlite.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
     <dependencies>
         <dependency>
             <groupId>org.xerial</groupId>
