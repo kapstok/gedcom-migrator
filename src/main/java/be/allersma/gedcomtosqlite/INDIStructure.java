@@ -88,6 +88,32 @@ public class INDIStructure extends Structure {
                         IndividualAttributeStructure IAStructure = new IndividualAttributeStructure(READER, '1', line, KEY);
                         additionalStatements.append("\n").append(IAStructure.parse());
                         break;
+                    case "BIRT":
+                    case "CHR":
+                    case "DEAT":
+                    case "BURI":
+                    case "CREM":
+                    case "ADOP":
+                    case "BAPM":
+                    case "BARM":
+                    case "BASM":
+                    case "BLES":
+                    case "CHRA":
+                    case "CONF":
+                    case "FCOM":
+                    case "ORDN":
+                    case "NATU":
+                    case "EMIG":
+                    case "IMMI":
+                    case "CENS":
+                    case "PROB":
+                    case "WILL":
+                    case "GRAD":
+                    case "RETI":
+                    case "EVEN":
+                        IndividualEventStructure eventStructure = new IndividualEventStructure(READER, '1', line, KEY);
+                        additionalStatements.append("\n").append(eventStructure.parse());
+                        break;
                     default:
                         System.out.printf(
                                 "Unknown item: '%s' (%s)%n", line, LineCounter.getLineNumber());

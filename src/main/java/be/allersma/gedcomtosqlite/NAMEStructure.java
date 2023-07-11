@@ -22,10 +22,6 @@ public class NAMEStructure extends Structure {
         surnames = parseSurnames(startingName).map(s -> "'" + s + "'").orElse("NULL");
         nicknames = "NULL";
 
-        if (givenNames.contains("Antie")) {
-            System.out.println("Antie found");
-        }
-
         if (parseSuffix(startingName).isPresent()) {
             System.err.println(
                     "Didn't expect a name having a suffix. Didn't implement this yet. Sorry! Name: " +
