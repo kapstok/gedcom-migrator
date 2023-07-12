@@ -1,0 +1,10 @@
+[package]
+name = "gedcom-to-sqlite"
+version = "0.1.0"
+authors = ["Jan Allersma <jan.allersma@lable.nl>"]
+edition = "2018"
+
+[dependencies]
+sqlite = "0.26.0"
+gedcom = "0.2.2"
+regex = "1"
