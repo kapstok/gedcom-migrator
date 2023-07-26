@@ -66,6 +66,7 @@ public class IndividualEventStructure extends Structure {
         return builder.toString();
     }
 
+    @Deprecated
     public String parseEventDetail(char currentLevel) throws IOException {
         StringBuilder builder = new StringBuilder();
         String line;
@@ -105,5 +106,6 @@ public class IndividualEventStructure extends Structure {
                     break;
             }
         }
+        return "";
     }
 }
