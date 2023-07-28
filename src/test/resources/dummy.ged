@@ -1,0 +1,26 @@
+0 HEAD
+1 DATE 28 JUL 2023
+2 TIME 21:54:36
+1 FILE base.ged.tmp
+1 GEDC
+2 VERS 5.5.1
+2 FORM LINEAGE-LINKED
+1 CHAR UTF-8
+0 @I262@ INDI
+1 NAME Ross /Werner/
+1 SEX F
+1 BIRT
+2 DATE 01 JAN 1950
+1 NOTE
+2 CONT onderwerp multimedia: jpg Ross Werner.jpg Ross Wer
+2 CONC ner
+2 CONT
+2 CONT FAMC uur: 17:39:51
+0 @I265@ INDI
+1 NAME Peter /PETERS/
+2 NICK Peter Pan
+1 SEX M
+1 BIRT
+2 DATE 14 JUL 2010
+2 PLAC Lutjelollum
+1 OCCU Medewerker op het huisartsen lab.

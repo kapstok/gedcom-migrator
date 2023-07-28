@@ -15,10 +15,9 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ParsingTest {
     private static Gedcom gedcom;
 
-    // TODO: Make dummy gedcom file in resources for testing
     @BeforeAll
     public static void initialize() throws SAXParseException, IOException {
-        InputStream stream = ParsingTest.class.getClassLoader().getResourceAsStream("fokkens.ged");
+        InputStream stream = ParsingTest.class.getClassLoader().getResourceAsStream("dummy.ged");
         ModelParser parser = new ModelParser();
         gedcom = parser.parseGedcom(stream);
         assertNotNull(gedcom);
@@ -33,17 +32,17 @@ public class ParsingTest {
 
     @Test
     public void doesAaltjeExistTest() {
-        Person aaltje = gedcom.getPerson("I262");
-        assertNotNull(aaltje, "Aaltje does not exist");
-        assertEquals(1, aaltje.getNames().size());
-        assertEquals("Aaltje /BULTENA/", aaltje.getNames().get(0).getValue());
+        Person ross = gedcom.getPerson("I262");
+        assertNotNull(ross, "Ross does not exist");
+        assertEquals(1, ross.getNames().size());
+        assertEquals("Ross /Werner/", ross.getNames().get(0).getValue());
     }
 
     @Test
     public void getNickName() {
-        Person greet = gedcom.getPerson("I265");
-        assertNotNull(greet);
-        assertEquals(1, greet.getNames().size());
-        assertEquals("Greet", greet.getNames().get(0).getNickname());
+        Person peterPan = gedcom.getPerson("I265");
+        assertNotNull(peterPan);
+        assertEquals(1, peterPan.getNames().size());
+        assertEquals("Peter Pan", peterPan.getNames().get(0).getNickname());
     }
 }
