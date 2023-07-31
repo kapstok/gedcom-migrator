@@ -14,16 +14,34 @@ import java.util.stream.Collectors;
  * This way you can check whether you have called all fields that are not null.
  */
 public class FieldMarker {
+
+    /**
+     * Same function as {@link FieldMarker#createMarkerTree(Gedcom, boolean)}, but with ignoreNullFields
+     * set to false.
+     */
     public static Branch<Gedcom> createMarkerTree(Gedcom gedcom) {
-        return new Branch<>(gedcom);
+        return createMarkerTree(gedcom, false);
+    }
+
+    /**
+     * Setting ignoreNullFields to true is more costly performance-wise.
+     * @param ignoreNullFields When looking for unmarked items, ignore check on all getters that return
+     *                         null. Also ignores empty {@link List}.
+     */
+    public static Branch<Gedcom> createMarkerTree(Gedcom gedcom, boolean ignoreNullFields) {
+        return new Branch<>(gedcom, "", ignoreNullFields);
     }
 
     public static class Branch<T> {
-        private final List<Leaf> leaves;
         T value;
+        private final boolean ignoreNullFields;
+        private final List<Leaf> leaves;
+        private final String path;
 
-        private Branch(T value) {
+        private Branch(T value, String path, boolean ignoreNullFields) {
             this.value = value;
+            this.path = path.isEmpty() ? "" : "/" + path;
+            this.ignoreNullFields = ignoreNullFields;
             this.leaves = Arrays.stream(value.getClass().getMethods())
                     .map(Leaf::new)
                     .collect(Collectors.toList());
@@ -46,13 +64,15 @@ public class FieldMarker {
                 Object result = match.get(0).method.invoke(value, args);
                 match.get(0).marked = true;
                 if ("org.folg.gedcom.model".equals(match.get(0).method.getReturnType().getPackageName())) {
-                    return Optional.of(new Branch<>(result));
+                    return Optional.of(new Branch<>(result, getPath() + match.get(0).name, ignoreNullFields));
                 } else if ("java.util.List".equals(match.get(0).method.getReturnType().getName())) {
                     Type[] actualType = ((ParameterizedType)match.get(0).method.getGenericReturnType()).getActualTypeArguments();
                     if (actualType.length == 1 && actualType[0].getTypeName() != null) {
                         if (actualType[0].getTypeName().startsWith("org.folg.gedcom.model")) {
                             return Optional.of(
-                                    ((List)result).stream().map(Branch::new).collect(Collectors.toList())
+                                    ((List)result).stream()
+                                            .map(entry -> new Branch<>(entry, getPath() + match.get(0).name, ignoreNullFields))
+                                            .collect(Collectors.toList())
                             );
                         } else {
                             return Optional.of(result);
@@ -70,10 +90,40 @@ public class FieldMarker {
         }
 
         public List<String> getUnmarkedItems() {
-            return leaves.stream()
-                    .filter(leaf -> !leaf.marked)
-                    .map(leaf -> leaf.name)
-                    .collect(Collectors.toList());
+            if (!ignoreNullFields) {
+                return leaves.stream()
+                        .filter(leaf -> !leaf.marked)
+                        .map(leaf -> leaf.name)
+                        .collect(Collectors.toList());
+            } else {
+                return leaves.stream()
+                        .filter(leaf -> !leaf.marked)
+                        .filter(leaf -> leaf.method.getParameterCount() == 0)
+                        .filter(getter -> {
+                            try {
+                                return getter.method.invoke(value) != null;
+                            } catch (IllegalAccessException | InvocationTargetException e) {
+                                return false;
+                            }
+                        })
+                        .filter(getter -> {
+                            if ("java.util.List".equals(getter.method.getReturnType().getName())) {
+                                try {
+                                    return !((List<?>)getter.method.invoke(value)).isEmpty();
+                                } catch (IllegalAccessException | InvocationTargetException e) {
+                                    return false;
+                                }
+                            } else {
+                                return true;
+                            }
+                        })
+                        .map(getter -> getter.name)
+                        .collect(Collectors.toList());
+            }
+        }
+
+        public String getPath() {
+            return this.path;
         }
     }
 

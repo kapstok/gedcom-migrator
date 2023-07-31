@@ -75,4 +75,25 @@ class FieldMarkerTest {
         assertInstanceOf(String.class, noteValue.get());
         assertFalse(((String)noteValue.get()).isBlank());
     }
+
+    @Test
+    public void ignoreNullFieldsTest() {
+        FieldMarker.Branch<Gedcom> fieldMarkerNonNull = FieldMarker.createMarkerTree(gedcom, true);
+        List<String> orginalNonNullFields = fieldMarkerNonNull.getUnmarkedItems();
+
+        Optional<Object> sources = fieldMarkerNonNull.invoke("getSources");
+        assertEquals(orginalNonNullFields.size(), fieldMarkerNonNull.getUnmarkedItems().size());
+
+        FieldMarker.Branch<Person> rossNull = ((List<FieldMarker.Branch<Person>>)fieldMarker.invoke("getPeople").get()).get(0);
+        FieldMarker.Branch<Person> rossNonNull = ((List<FieldMarker.Branch<Person>>)fieldMarkerNonNull.invoke("getPeople").get()).get(0);
+        assertEquals(85, rossNull.getUnmarkedItems().size());
+        assertEquals(8, rossNonNull.getUnmarkedItems().size());
+    }
+
+    @Test
+    public void pathTest() {
+        assertTrue(fieldMarker.getPath().isEmpty());
+        FieldMarker.Branch<Person> ross = ((List<FieldMarker.Branch<Person>>)fieldMarker.invoke("getPeople").get()).get(0);
+        assertEquals("/getPeople", ross.getPath());
+    }
 }
