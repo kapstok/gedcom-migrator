@@ -16,20 +16,20 @@ This multi-module project consists of three modules:
 
 ```
  - gedcom-migrator
- |--- lib
+ |--- migration-library
  |--- sqlite
 ```
 
 `gedcom-migrator` is the main pom. It does not generate a JAR.
 
-`lib` is a generic library to make a migration from Gedcom easier and more
+`migration-library` is a generic library to make a migration from Gedcom easier and more
 correct.
 
-`sqlite` is an implementation that uses `lib` for migrating Gedcom data to Sqlite.
+`sqlite` is an implementation that uses `migration-library` for migrating Gedcom data to Sqlite.
 
 It will be likely that `sqlite` will not directly be useful for your use case.
 But you can use the source code as an example for creating your own implementation,
-using `lib` as dependency.
+using `migration-library` as dependency.
 
 ## Running
 
