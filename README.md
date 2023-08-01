@@ -1,35 +1,41 @@
-# Gedcom ~~to Sqlite parser~~ migrator
+# Gedcom migrator
 
 Gedcom is a standard that misses
-1. Flexibility, such as the ability to do refactors or adding custom fields.
-2. Portability. Displaying gedcom data in a (web) application is non-trivial and requires a library.
+1. Flexibility, such as the ability to do complex refactors or adding custom fields.
+2. Displaying gedcom data in a (web) application is non-trivial and requires a
+library.
 3. Usability. Performing complicated queries on gedcom directly is not possible.
 
 This is an attempt to provide a generic implementation for migrating gedcom data to
-a certain database. Personally I will use sqlite.
+another form of data, such as a database. Personally I will use implementation
+for migrating to a new sqlite database.
 
-## TODO
+## Structure
 
-- ~~In `INDI-structuur.md` staat dat de `PERSONAL_NAME_STRUCTURE` `n NAME` heeft en dat
-`PERSONAL_NAME_PIECES` +1 is. In de code is `PERSONAL_NAME_STRUCTURE` achterwege
-gelaten en is direct `PERSONAL_NAME_PIECES` geimplementeerd, maar klopt dan nog de
-inspringing wel?~~ Dit is achterhaald.
-- Ik zit te denken aan een wrapper om alle gedcom modellen heen en de velden daarvan.
-Die wrapper geeft drie mogelijkheden:
-1. Je kunt de waarde van dat veld/model lezen.
-2. Je kunt een veld/model markeren als _gelezen_.
-3. Een functie die de bovengenoemde twee functies combineert.
+This multi-module project consists of three modules:
+
+```
+ - gedcom-migrator
+ |--- lib
+ |--- sqlite
+```
+
+`gedcom-migrator` is the main pom. It does not generate a JAR.
+
+`lib` is a generic library to make a migration from Gedcom easier and more
+correct.
+
+`sqlite` is an implementation that uses `lib` for migrating Gedcom data to Sqlite.
+
+It will be likely that `sqlite` will not directly be useful for your use case.
+But you can use the source code as an example for creating your own implementation,
+using `lib` as dependency.
 
 ## Running
 
-> The instructions below are obsolete.
-
-To get the parser running from the commandline, execute
+To get the `sqlite` compiling and running, execute
 
 ```bash
-mvn exec:java -Dexec.args="<PATH_TO_GEDCOM_FILE> <PATH_TO_SQLITE_DB>"
-
-# alternative commands:
-mvn exec:java -Dexec.args="--help"
-mvn exec:java -Dexec.args="--version"
+mvn clean install
+mvn exec:java -pl :sqlite
 ```

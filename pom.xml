@@ -4,14 +4,22 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>be.allersma</groupId>
-    <artifactId>gedcom-to-sqlite</artifactId>
+    <groupId>be.allersma.gedcom</groupId>
+    <artifactId>gedcom-migrator</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>Gedcom to Sqlite parser</name>
+    <packaging>pom</packaging>
+    <name>Gedcom migrator</name>
+    <modules>
+        <module>migration-library</module>
+        <module>sqlite</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
+
+        <gedcom.version>1.14.0</gedcom.version>
+        <sqlite.version>3.42.0.0</sqlite.version>
     </properties>
 
     <scm>
@@ -23,20 +31,10 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.xerial</groupId>
-            <artifactId>sqlite-jdbc</artifactId>
-            <version>3.42.0.0</version>
-        </dependency>
-        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <version>5.8.1</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.familysearch.gedcom</groupId>
-            <artifactId>gedcom</artifactId>
-            <version>1.14.0</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -49,18 +47,13 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>1.2.1</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>java</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>3.0.1</version>
                 <configuration>
-                    <mainClass>be.allersma.gedcomtosqlite.Main</mainClass>
+                    <tagNameFormat>v@{project.version}</tagNameFormat>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <releaseProfiles>release</releaseProfiles>
                 </configuration>
             </plugin>
         </plugins>
