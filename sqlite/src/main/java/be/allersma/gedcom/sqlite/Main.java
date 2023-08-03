@@ -22,7 +22,7 @@ public class Main {
         FieldMarker.Branch<Gedcom> fieldMarker = FieldMarker.createMarkerTree(gedcom, true);
 
         logger.debug("Created Field marker");
-        System.out.printf("At: %s%n", fieldMarker.getPath());
+        System.out.printf("At: %s%n", fieldMarker.getPath().isEmpty() ? "/" : fieldMarker.getPath());
         System.out.println("Field that have not been implemented:");
         System.out.println("-------------------------------------");
         fieldMarker.getUnmarkedItems().forEach(System.out::println);
