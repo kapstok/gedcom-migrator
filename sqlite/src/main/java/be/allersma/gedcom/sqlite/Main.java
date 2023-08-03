@@ -1,6 +1,8 @@
 package be.allersma.gedcom.sqlite;
 
 import be.allersma.gedcom.migrator.FieldMarker;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.folg.gedcom.model.Gedcom;
 import org.folg.gedcom.parser.ModelParser;
 
@@ -8,15 +10,19 @@ import java.io.InputStream;
 import java.util.Optional;
 
 public class Main {
+    private static final Logger logger = LogManager.getLogger(Main.class);
+
     public static void main(String[] args) {
         Gedcom gedcom = initialize().orElseGet(() -> {
-            System.err.println("ERROR: Error in initialization. Aborting ...");
+            logger.error("Error in initialization. Aborting ...");
             System.exit(1);
             return null;
         });
 
         FieldMarker.Branch<Gedcom> fieldMarker = FieldMarker.createMarkerTree(gedcom, true);
 
+        logger.debug("Created Field marker");
+        System.out.printf("At: %s%n", fieldMarker.getPath());
         System.out.println("Field that have not been implemented:");
         System.out.println("-------------------------------------");
         fieldMarker.getUnmarkedItems().forEach(System.out::println);

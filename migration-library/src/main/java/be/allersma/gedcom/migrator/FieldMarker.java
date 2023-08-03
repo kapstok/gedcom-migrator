@@ -1,5 +1,7 @@
 package be.allersma.gedcom.migrator;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.folg.gedcom.model.Gedcom;
 
 import java.lang.reflect.InvocationTargetException;
@@ -14,6 +16,7 @@ import java.util.stream.Collectors;
  * This way you can check whether you have called all fields that are not null.
  */
 public class FieldMarker {
+    private static final Logger logger = LogManager.getLogger(FieldMarker.class);
 
     /**
      * Same function as {@link FieldMarker#createMarkerTree(Gedcom, boolean)}, but with ignoreNullFields
@@ -40,7 +43,7 @@ public class FieldMarker {
 
         private Branch(T value, String path, boolean ignoreNullFields) {
             this.value = value;
-            this.path = path.isEmpty() ? "" : "/" + path;
+            this.path = path.isEmpty() ? "/" : "/" + path;
             this.ignoreNullFields = ignoreNullFields;
             this.leaves = Arrays.stream(value.getClass().getMethods())
                     .map(Leaf::new)
@@ -57,7 +60,7 @@ public class FieldMarker {
             }
 
             if (match.size() > 1) {
-                System.err.println("WARNING: More than one match found. Should never happen. Taking first one ...");
+                logger.warn("More than one match found. Should never happen. Taking first one ...");
             }
 
             try {
@@ -78,7 +81,7 @@ public class FieldMarker {
                             return Optional.of(result);
                         }
                     } else {
-                        System.err.printf("ERROR: Expected only one actual type argument. Got %d.%n", actualType.length);
+                        logger.error("Expected only one actual type argument. Got {}.", actualType.length);
                         return Optional.empty();
                     }
                 } else {
