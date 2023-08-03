@@ -8,6 +8,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -43,7 +46,7 @@ public class FieldMarker {
 
         private Branch(T value, String path, boolean ignoreNullFields) {
             this.value = value;
-            this.path = path.isEmpty() ? "/" : "/" + path;
+            this.path = path.isEmpty() ? "" : "/" + path;
             this.ignoreNullFields = ignoreNullFields;
             this.leaves = Arrays.stream(value.getClass().getMethods())
                     .map(Leaf::new)
@@ -127,6 +130,59 @@ public class FieldMarker {
 
         public String getPath() {
             return this.path;
+        }
+
+        /**
+         * Marks all leaves of this branch
+         */
+        public void markAll() {
+            logger.info("Using markAll without security hash. Recommended to use hash.");
+
+            String securityHash = getMarkAllHash();
+            markAll(securityHash);
+        }
+
+        /**
+         * Has the same behaviour as {@link Branch#markAll()}, but also requires a security hash,
+         * which can be obtained from {@link Branch#getMarkAllHash()}. Once you made an implementation
+         * for your migration, you can use this function to mark all leaves that you haven't used.
+         * By storing the hash somewhere, for example in a file like a {@link ResourceBundle},
+         * the library doesn't mark all fields automatically when, for example due to a new Gedcom specification,
+         * the fields have changed.
+         */
+        public void markAll(String securityHash) {
+            if (!getMarkAllHash().equals(securityHash)) {
+                logger.error("Hash is different! Fields have changed. Not marking all fields.");
+                return;
+            }
+
+            leaves.forEach(leaf -> leaf.marked = true);
+        }
+
+        /**
+         * @see Branch#markAll(String)
+         * @return An SHA-512 Hash
+         */
+        public String getMarkAllHash() {
+            MessageDigest digest;
+            try {
+                digest = MessageDigest.getInstance("SHA-512");
+            } catch (NoSuchAlgorithmException e) {
+                logger.error("Unable to create digest. This should never happen!");
+                throw new RuntimeException(e);
+            }
+
+            String input = getPath() + leaves.stream().map(leaf -> leaf.name).collect(Collectors.joining());
+            byte[] hashedLeaves = digest.digest(input.getBytes());
+            BigInteger hashRepresentation = new BigInteger(1, hashedLeaves);
+            StringBuilder hash = new StringBuilder(hashRepresentation.toString(16));
+
+            // Add preceding 0s to make it 32 bit
+            while (hash.length() < 32) {
+                hash.insert(0, "0");
+            }
+
+            return hash.toString();
         }
     }
 

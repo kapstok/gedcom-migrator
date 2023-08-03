@@ -96,4 +96,31 @@ class FieldMarkerTest {
         FieldMarker.Branch<Person> ross = ((List<FieldMarker.Branch<Person>>)fieldMarker.invoke("getPeople").get()).get(0);
         assertEquals("/getPeople", ross.getPath());
     }
+
+    @Test
+    public void markAllNoHashTest() {
+        List<String> originalItems = fieldMarker.getUnmarkedItems();
+        fieldMarker.markAll();
+        List<String> unmarkedItems = fieldMarker.getUnmarkedItems();
+        assertFalse(originalItems.isEmpty());
+        assertTrue(unmarkedItems.isEmpty());
+    }
+
+    @Test
+    public void markAllRightHashTest() {
+        List<String> originalItems = fieldMarker.getUnmarkedItems();
+        fieldMarker.markAll(fieldMarker.getMarkAllHash());
+        List<String> unmarkedItems = fieldMarker.getUnmarkedItems();
+        assertFalse(originalItems.isEmpty());
+        assertTrue(unmarkedItems.isEmpty());
+    }
+
+    @Test
+    public void markAllWrongHashTest() {
+        List<String> originalItems = fieldMarker.getUnmarkedItems();
+        fieldMarker.markAll("BAD-HASH");
+        List<String> unmarkedItems = fieldMarker.getUnmarkedItems();
+        assertFalse(originalItems.isEmpty());
+        assertEquals(originalItems.size(), unmarkedItems.size());
+    }
 }
