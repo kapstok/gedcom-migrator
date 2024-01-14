@@ -197,6 +197,14 @@ public class FunctionMarker {
 
             return this;
         }
+
+        /**
+         * Only get the value when you really need it. Usually {@link Branch#invoke(String, Object...)}
+         * should do the job.
+         */
+        public T getValue() {
+            return value;
+        }
     }
 
     public static class Leaf {
