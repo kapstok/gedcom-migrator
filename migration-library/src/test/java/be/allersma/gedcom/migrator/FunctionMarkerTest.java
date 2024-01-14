@@ -16,8 +16,8 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class FieldMarkerTest {
-    private FieldMarker.Branch<Gedcom> fieldMarker;
+class FunctionMarkerTest {
+    private FunctionMarker.Branch<Gedcom> functionMarker;
 
     private static Gedcom gedcom;
 
@@ -33,7 +33,7 @@ class FieldMarkerTest {
 
     @BeforeEach
     public void initializeEach() {
-        fieldMarker = FieldMarker.createMarkerTree(gedcom);
+        functionMarker = FunctionMarker.createMarkerTree(gedcom);
     }
 
     @Test
@@ -43,29 +43,29 @@ class FieldMarkerTest {
 
     @Test
     public void showUnmarkedItems() {
-        List<String> originalLeaves = fieldMarker.getUnmarkedItems();
-        Optional<Object> people = fieldMarker.invoke("getPeople");
-        List<String> unmarkedLeaves = fieldMarker.getUnmarkedItems();
+        List<String> originalLeaves = functionMarker.getUnmarkedItems();
+        functionMarker.mark("getPeople");
+        List<String> unmarkedLeaves = functionMarker.getUnmarkedItems();
 
         assertEquals(originalLeaves.size() - 1, unmarkedLeaves.size());
     }
 
     @Test
     public void basicBranchTest() {
-        Optional<Object> people = fieldMarker.invoke("getPeople");
+        Optional<Object> people = functionMarker.invoke("getPeople");
         assertTrue(people.isPresent());
         assertEquals(2, ((List)people.get()).size());
     }
 
     @Test
     public void recursionTest() {
-        Optional<Object> people = fieldMarker.invoke("getPeople");
+        Optional<Object> people = functionMarker.invoke("getPeople");
         assertTrue(people.isPresent());
         assertInstanceOf(List.class, people.get());
-        assertInstanceOf(FieldMarker.Branch.class, ((List<FieldMarker.Branch<Person>>)people.get()).get(0));
-        assertInstanceOf(Person.class, ((FieldMarker.Branch<Person>)((List<?>) people.get()).get(0)).value);
+        assertInstanceOf(FunctionMarker.Branch.class, ((List<FunctionMarker.Branch<Person>>)people.get()).get(0));
+        assertInstanceOf(Person.class, ((FunctionMarker.Branch<Person>)((List<?>) people.get()).get(0)).value);
 
-        List<FieldMarker.Branch<Note>> note = (List<FieldMarker.Branch<Note>>)((List<FieldMarker.Branch>)people.get()).get(0).invoke("getNotes").get();
+        List<FunctionMarker.Branch<Note>> note = (List<FunctionMarker.Branch<Note>>)((List<FunctionMarker.Branch>)people.get()).get(0).invoke("getNotes").get();
         assertInstanceOf(List.class, note);
         assertEquals(1, note.size());
         assertInstanceOf(Note.class, note.get(0).value);
@@ -78,48 +78,48 @@ class FieldMarkerTest {
 
     @Test
     public void ignoreNullFieldsTest() {
-        FieldMarker.Branch<Gedcom> fieldMarkerNonNull = FieldMarker.createMarkerTree(gedcom, true);
-        List<String> orginalNonNullFields = fieldMarkerNonNull.getUnmarkedItems();
+        FunctionMarker.Branch<Gedcom> functionMarkerNonNull = FunctionMarker.createMarkerTree(gedcom, true);
+        List<String> orginalNonNullFields = functionMarkerNonNull.getUnmarkedItems();
 
-        Optional<Object> sources = fieldMarkerNonNull.invoke("getSources");
-        assertEquals(orginalNonNullFields.size(), fieldMarkerNonNull.getUnmarkedItems().size());
+        functionMarkerNonNull.mark("getSources");
+        assertEquals(orginalNonNullFields.size(), functionMarkerNonNull.getUnmarkedItems().size());
 
-        FieldMarker.Branch<Person> rossNull = ((List<FieldMarker.Branch<Person>>)fieldMarker.invoke("getPeople").get()).get(0);
-        FieldMarker.Branch<Person> rossNonNull = ((List<FieldMarker.Branch<Person>>)fieldMarkerNonNull.invoke("getPeople").get()).get(0);
+        FunctionMarker.Branch<Person> rossNull = ((List<FunctionMarker.Branch<Person>>) functionMarker.invoke("getPeople").get()).get(0);
+        FunctionMarker.Branch<Person> rossNonNull = ((List<FunctionMarker.Branch<Person>>)functionMarkerNonNull.invoke("getPeople").get()).get(0);
         assertEquals(85, rossNull.getUnmarkedItems().size());
         assertEquals(8, rossNonNull.getUnmarkedItems().size());
     }
 
     @Test
     public void pathTest() {
-        assertTrue(fieldMarker.getPath().isEmpty());
-        FieldMarker.Branch<Person> ross = ((List<FieldMarker.Branch<Person>>)fieldMarker.invoke("getPeople").get()).get(0);
+        assertTrue(functionMarker.getPath().isEmpty());
+        FunctionMarker.Branch<Person> ross = ((List<FunctionMarker.Branch<Person>>) functionMarker.invoke("getPeople").get()).get(0);
         assertEquals("/getPeople", ross.getPath());
     }
 
     @Test
     public void markAllNoHashTest() {
-        List<String> originalItems = fieldMarker.getUnmarkedItems();
-        fieldMarker.markAll();
-        List<String> unmarkedItems = fieldMarker.getUnmarkedItems();
+        List<String> originalItems = functionMarker.getUnmarkedItems();
+        functionMarker.markAll();
+        List<String> unmarkedItems = functionMarker.getUnmarkedItems();
         assertFalse(originalItems.isEmpty());
         assertTrue(unmarkedItems.isEmpty());
     }
 
     @Test
     public void markAllRightHashTest() {
-        List<String> originalItems = fieldMarker.getUnmarkedItems();
-        fieldMarker.markAll(fieldMarker.getMarkAllHash());
-        List<String> unmarkedItems = fieldMarker.getUnmarkedItems();
+        List<String> originalItems = functionMarker.getUnmarkedItems();
+        functionMarker.markAll(functionMarker.getMarkAllHash());
+        List<String> unmarkedItems = functionMarker.getUnmarkedItems();
         assertFalse(originalItems.isEmpty());
         assertTrue(unmarkedItems.isEmpty());
     }
 
     @Test
     public void markAllWrongHashTest() {
-        List<String> originalItems = fieldMarker.getUnmarkedItems();
-        fieldMarker.markAll("BAD-HASH");
-        List<String> unmarkedItems = fieldMarker.getUnmarkedItems();
+        List<String> originalItems = functionMarker.getUnmarkedItems();
+        functionMarker.markAll("BAD-HASH");
+        List<String> unmarkedItems = functionMarker.getUnmarkedItems();
         assertFalse(originalItems.isEmpty());
         assertEquals(originalItems.size(), unmarkedItems.size());
     }

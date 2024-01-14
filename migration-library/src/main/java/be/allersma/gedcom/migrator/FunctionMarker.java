@@ -18,11 +18,11 @@ import java.util.stream.Collectors;
  * A field marker can be used to mark fields that have been read before.
  * This way you can check whether you have called all fields that are not null.
  */
-public class FieldMarker {
-    private static final Logger logger = LogManager.getLogger(FieldMarker.class);
+public class FunctionMarker {
+    private static final Logger logger = LogManager.getLogger(FunctionMarker.class);
 
     /**
-     * Same function as {@link FieldMarker#createMarkerTree(Gedcom, boolean)}, but with ignoreNullFields
+     * Same function as {@link FunctionMarker#createMarkerTree(Gedcom, boolean)}, but with ignoreNullFields
      * set to false.
      */
     public static Branch<Gedcom> createMarkerTree(Gedcom gedcom) {
@@ -183,6 +183,19 @@ public class FieldMarker {
             }
 
             return hash.toString();
+        }
+
+        /**
+         * Sometimes you want a function to be ignored while not using its return value.
+         * You can ignore individual functions by marking them using this function.
+         * @param function The name of the function
+         */
+        public Branch<T> mark(String function) {
+            leaves.stream()
+                    .filter(leaf -> function.equals(leaf.name))
+                    .forEach(leaf -> leaf.marked = true);
+
+            return this;
         }
     }
 
